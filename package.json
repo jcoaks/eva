@@ -8,10 +8,11 @@
     "deploy": "serverless deploy"
   },
   "dependencies": {
-    "@libsql/client": "^0.6.0",
-    "serverless-offline": "^13.5.0"
+    "@libsql/client": "^0.6.0"
   },
   "devDependencies": {
-    "serverless": "^3.38.0"
+    "serverless": "^3.38.0",
+    "serverless-prune-plugin": "^2.0.2",
+    "serverless-offline": "^13.5.0"
   }
 }
