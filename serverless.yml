@@ -1,0 +1,63 @@
+service: eva
+frameworkVersion: '3'
+useDotenv: true
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  environment:
+    TURSO_DATABASE_URL: "${env:TURSO_DATABASE_URL}"
+    TURSO_AUTH_TOKEN: ${env:TURSO_AUTH_TOKEN}
+
+functions:
+  updatePrices:
+    handler: scr/update-prices.handler
+    events:
+      - httpApi:
+          path: /update-prices
+          method: get
+  getCsv:
+    handler: scr/get-csv.handler
+    events:
+      - httpApi:
+          path: /csv
+          method: get
+  productsList:
+    handler: scr/product/list.handler
+    events:
+      - httpApi:
+          path: /products
+          method: get
+  newProduct:
+    handler: scr/product/new.handler
+    events:
+      - httpApi:
+          path: /product
+          method: post
+  updateProduct:
+    handler: scr/product/update.handler
+    events:
+      - httpApi:
+          path: /product/{id}
+          method: put
+  purchasesList:
+    handler: scr/purchase/list.handler
+    events:
+      - httpApi:
+          path: /purchases
+          method: get
+  newPurchase:
+    handler: scr/purchase/new.handler
+    events:
+      - httpApi:
+          path: /purchase
+          method: post
+  updatePurchase:
+    handler: scr/purchase/update.handler
+    events:
+      - httpApi:
+          path: /purchase/{id}
+          method: post
+
+plugins:
+  - serverless-offline

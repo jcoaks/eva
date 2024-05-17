@@ -1,0 +1,14 @@
+{
+  "name": "eva",
+  "description": "Improving Wall-e with EVA",
+  "version": "1.0.0",
+  "license": "MIT",
+  "scripts": {
+    "dev": "sls offline start --noTimeout",
+    "deploy": "serverless deploy"
+  },
+  "dependencies": {
+    "@libsql/client": "^0.6.0",
+    "serverless-offline": "^13.5.0"
+  }
+}
