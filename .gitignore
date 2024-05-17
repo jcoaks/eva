@@ -4,6 +4,8 @@ jspm_packages
 
 # Serverless directories
 .serverless
+yarn.lock
+package-lock.json
 
 # Database
 local.db
