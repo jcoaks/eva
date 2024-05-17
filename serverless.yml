@@ -12,10 +12,10 @@ provider:
 functions:
   updatePrices:
     handler: scr/update-prices.handler
-    events:
-      - httpApi:
-          path: /update-prices
-          method: get
+    events:	
+      - schedule:
+          rate:
+            - cron(0 8 ? * TUE,THU,SAT *)
   getCsv:
     handler: scr/get-csv.handler
     events:
