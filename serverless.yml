@@ -31,10 +31,7 @@ functions:
       - httpApi:
           path: /products
           method: get
-          cors:
-            origin: '*'
-            headers:
-              - Content-Type
+          cors: true
   newProduct:
     handler: scr/product/new.handler
     events:

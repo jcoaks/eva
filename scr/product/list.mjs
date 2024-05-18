@@ -12,5 +12,10 @@ export const handler = async(event) => {
       null,
       2
     ),
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET,OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+    },
   };
 };
