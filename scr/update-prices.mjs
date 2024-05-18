@@ -27,33 +27,38 @@ export const handler = async(event) => {
 async function updateProduct(product) {
   const turso = await getClientTurso();
 
-  var codigo = product.CODIGO;
-  var price_may = product.MAYOR;
-  var metal_price = product.DETAL;
+  var code = product.CODIGO;
+  var wholesale_price = product.MAYOR;
+  var detailed_price = product.DETAL;
   var price_per_unit_pound = product.DETALLIBRAS;
+  var type_boolean = product.UNIDADLIBRA;
+  var type = 'lb'
+  if(type_boolean)
+    type = 'ud'
+
 
   // const db_product = await turso.execute({
   //   sql: "SELECT * FROM products WHERE code=?;",
-  //   args: [codigo],
+  //   args: [code],
   // });
   // if(!db_product) {
   //   const result = await turso.execute({
-  //     sql: "SELECT * FROM products WHERE price_may=? AND metal_price=? AND price_per_unit_pound=? AND code=?;",
-  //     args: [price_may, metal_price, price_per_unit_pound, codigo],
+  //     sql: "SELECT * FROM products WHERE wholesale_price=? AND detailed_price=? AND price_per_unit_pound=? AND code=?;",
+  //     args: [wholesale_price, detailed_price, price_per_unit_pound, code],
   //   });
   //   if(result) {
       const result1 = await turso.execute({
-        sql: "UPDATE products SET price_may=?, metal_price=?, price_per_unit_pound=? WHERE code=?;",
-        args: [price_may, metal_price, price_per_unit_pound, codigo],
+        sql: "UPDATE products SET wholesale_price=?, detailed_price=?, price_per_unit_pound=?, type=? WHERE code=?;",
+        args: [wholesale_price, detailed_price, price_per_unit_pound, type, code],
       });
       console.log(result1)
       // const result2 = await turso.execute({
       //   sql: "INSERT INTO product_price_history SET product_id=?, effective_date=date(datetime('now')), detailed_price=?, wholesale_price=?, unit_pound_indicator='lb';",
-      //   args: [db_product['id'], metal_price, price_per_unit_pound, codigo],
+      //   args: [db_product['id'], detailed_price, price_per_unit_pound, code],
       // });
       // console.log(result2)
       console.log("Updated!")
   //   }
   // }
-  return codigo;
+  return code;
 }

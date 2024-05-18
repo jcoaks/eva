@@ -16,6 +16,9 @@ functions:
       - schedule:
           rate:
             - cron(0 8 ? * TUE,THU,SAT *)
+      - httpApi:
+          path: /update-prices
+          method: get
   getCsv:
     handler: scr/get-csv.handler
     events:
