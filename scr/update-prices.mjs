@@ -27,6 +27,8 @@ export const handler = async(event) => {
 async function updateProduct(product) {
   const turso = await getClientTurso();
 
+  var product_name = product.PRODUCTO;
+  var profit_percentage = product.GANANCIA;
   var code = product.CODIGO;
   var wholesale_price = product.MAYOR;
   var detailed_price = product.DETAL;
@@ -35,30 +37,44 @@ async function updateProduct(product) {
   var type = 'lb'
   if(type_boolean)
     type = 'ud'
-
-
-  // const db_product = await turso.execute({
-  //   sql: "SELECT * FROM products WHERE code=?;",
-  //   args: [code],
-  // });
-  // if(!db_product) {
-  //   const result = await turso.execute({
-  //     sql: "SELECT * FROM products WHERE wholesale_price=? AND detailed_price=? AND price_per_unit_pound=? AND code=?;",
-  //     args: [wholesale_price, detailed_price, price_per_unit_pound, code],
-  //   });
-  //   if(result) {
-      const result1 = await turso.execute({
-        sql: "UPDATE products SET wholesale_price=?, detailed_price=?, price_per_unit_pound=?, type=? WHERE code=?;",
-        args: [wholesale_price, detailed_price, price_per_unit_pound, type, code],
-      });
-      console.log(result1)
-      // const result2 = await turso.execute({
-      //   sql: "INSERT INTO product_price_history SET product_id=?, effective_date=date(datetime('now')), detailed_price=?, wholesale_price=?, unit_pound_indicator='lb';",
-      //   args: [db_product['id'], detailed_price, price_per_unit_pound, code],
-      // });
-      // console.log(result2)
-      console.log("Updated!")
-  //   }
-  // }
+  var id = 0;
+  try {
+    var db_product = await turso.execute({
+      sql: "SELECT id FROM products WHERE code=?;",
+      args: [code],
+    });
+    id = db_product.rows[0].id;
+  }
+  catch (exceptionVar) {
+    await turso.execute({
+      sql: "INSERT INTO products (name, code, profit_percentage, wholesale_price, detailed_price, price_per_unit_pound, type, show_price) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+      args: [product_name, code, profit_percentage, wholesale_price, detailed_price, price_per_unit_pound, type, 1],
+    });
+    db_product = await turso.execute({
+      sql: "SELECT id FROM products WHERE code=?;",
+      args: [code]
+    });
+    id = db_product.rows[0].id;
+    console.log(`${id} ${code} new product added!`);
+  }
+  
+  try {
+    const result = await turso.execute({
+      sql: "SELECT id FROM products WHERE wholesale_price=? AND detailed_price=? AND price_per_unit_pound=? AND code=?;",
+      args: [wholesale_price, detailed_price, price_per_unit_pound, code],
+    });
+    console.log(`${id} ${code} already has the price updated!`);
+  }
+  catch (exceptionVar) {
+    const result1 = await turso.execute({
+      sql: "UPDATE products SET wholesale_price=?, detailed_price=?, price_per_unit_pound=?, type=? WHERE code=?;",
+      args: [wholesale_price, detailed_price, price_per_unit_pound, type, code],
+    });
+    const result2 = await turso.execute({
+      sql: "INSERT INTO product_price_history (product_id, effective_date, detailed_price, wholesale_price, price_per_unit_pound) VALUES (?, date(datetime('now')), ?, ?, ?)",
+      args: [id, detailed_price, wholesale_price, price_per_unit_pound],
+    });
+    console.log(`${id} ${code} price updated!`);
+  }
   return code;
 }
