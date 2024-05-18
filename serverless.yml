@@ -62,6 +62,12 @@ functions:
           path: /purchase/{id}
           method: post
 
+cors:
+  - enabled: true
+  - origin: 'https://main.db1yt0zw5pxtu.amplifyapp.com'
+  - headers: 'Content-Type'
+  - methods: 'GET'
+
 plugins:
   - serverless-offline
   - serverless-prune-plugin
