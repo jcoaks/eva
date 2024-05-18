@@ -8,6 +8,21 @@ provider:
   environment:
     TURSO_DATABASE_URL: "${env:TURSO_DATABASE_URL}"
     TURSO_AUTH_TOKEN: ${env:TURSO_AUTH_TOKEN}
+  httpApi:
+    cors:
+      allowedOrigins:
+        - https://main.db1yt0zw5pxtu.amplifyapp.com
+        - http://localhost
+        - http://127.0.0.1
+      allowedHeaders:
+        - Content-Type
+        - Authorization
+      allowedMethods:
+        - GET, POST, PUT, OPTIONS
+      allowCredentials: true
+      exposedResponseHeaders:
+        - Special-Response-Header
+      maxAge: 6000 # In seconds
 
 functions:
   updatePrices:
@@ -31,7 +46,6 @@ functions:
       - httpApi:
           path: /products
           method: get
-          cors: true
   newProduct:
     handler: scr/product/new.handler
     events:
