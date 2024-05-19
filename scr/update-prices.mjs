@@ -37,13 +37,14 @@ async function updateProduct(product) {
   var type = 'lb'
   if(type_boolean)
     type = 'ud'
-  var id = 0;
+  var database_product = null;
   try {
     var db_product = await turso.execute({
-      sql: "SELECT id FROM products WHERE code=?;",
+      sql: "SELECT * FROM products WHERE code=?;",
       args: [code],
     });
-    id = db_product.rows[0].id;
+    database_product = db_product.rows[0];
+    var id = db_product.rows[0].id;
   }
   catch (exceptionVar) {
     await turso.execute({
@@ -51,30 +52,69 @@ async function updateProduct(product) {
       args: [product_name, code, profit_percentage, wholesale_price, detailed_price, price_per_unit_pound, type, 1],
     });
     db_product = await turso.execute({
-      sql: "SELECT id FROM products WHERE code=?;",
+      sql: "SELECT * FROM products WHERE code=?;",
       args: [code]
     });
-    id = db_product.rows[0].id;
-    console.log(`${id} ${code} new product added!`);
+    database_product = db_product.rows[0];
+    console.log(`${database_product.id} ${code} new product added!`);
+  }
+
+  try {
+    if(database_product.image_url != ""){
+      var image_url = await getProductImage(database_product.name);
+      console.log(image_url);
+      if(image_url != null && image_url != ""){
+        const result1 = await turso.execute({
+          sql: "UPDATE products SET image_url=? WHERE code=?;",
+          args: [image_url, code],
+        });
+        console.log(`${database_product.id} ${code} image updated!`);
+      }
+    }
+  }
+  catch (exceptionVar) {
+    console.error(exceptionVar);
   }
   
   try {
     const result = await turso.execute({
-      sql: "SELECT id FROM products WHERE wholesale_price=? AND detailed_price=? AND price_per_unit_pound=? AND code=?;",
-      args: [wholesale_price, detailed_price, price_per_unit_pound, code],
+      sql: "SELECT id FROM products WHERE name=? AND profit_percentage=? AND wholesale_price=? AND detailed_price=? AND price_per_unit_pound=? AND code=?;",
+      args: [product_name, profit_percentage, wholesale_price, detailed_price, price_per_unit_pound, code],
     });
-    console.log(`${id} ${code} already has the price updated!`);
+    var id = result.rows[0].id;
+    console.log(`${database_product.id} ${code} already has the price updated!`);
   }
   catch (exceptionVar) {
     const result1 = await turso.execute({
-      sql: "UPDATE products SET wholesale_price=?, detailed_price=?, price_per_unit_pound=?, type=? WHERE code=?;",
-      args: [wholesale_price, detailed_price, price_per_unit_pound, type, code],
+      sql: "UPDATE products SET name=?, profit_percentage=?, wholesale_price=?, detailed_price=?, price_per_unit_pound=?, type=? WHERE code=?;",
+      args: [product_name, profit_percentage, wholesale_price, detailed_price, price_per_unit_pound, type, code],
     });
     const result2 = await turso.execute({
       sql: "INSERT INTO product_price_history (product_id, effective_date, detailed_price, wholesale_price, price_per_unit_pound) VALUES (?, date(datetime('now')), ?, ?, ?)",
-      args: [id, detailed_price, wholesale_price, price_per_unit_pound],
+      args: [database_product.id, detailed_price, wholesale_price, price_per_unit_pound],
     });
-    console.log(`${id} ${code} price updated!`);
+    console.log(`${database_product.id} ${code} price updated!`);
   }
   return code;
+}
+
+async function getProductImage(query){
+  const accessKey = process.env.UNSPLASH_ACCESS_KEY;
+  console.log(accessKey);
+  var url = `https://api.unsplash.com/search/photos?query=${query}%20fruta&orientation=squarish&client_id=${accessKey}&page=1&per_page=1&lang=es`;
+  fetch(url)
+      .then(response => response.json())
+      .then(data => {
+          console.log(data);
+          try{
+            return data.results[0].urls.thumb;
+          }catch(exc){
+            console.log(exc);
+            return null;
+          }
+      })
+      .catch(error => {
+        console.error('Error al obtener imágenes:', error);
+        return null;
+      });
 }

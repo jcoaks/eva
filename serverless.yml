@@ -8,6 +8,7 @@ provider:
   environment:
     TURSO_DATABASE_URL: "${env:TURSO_DATABASE_URL}"
     TURSO_AUTH_TOKEN: ${env:TURSO_AUTH_TOKEN}
+    UNSPLASH_ACCESS_KEY: ${env:UNSPLASH_ACCESS_KEY}
 
 functions:
   updatePrices:
@@ -15,7 +16,7 @@ functions:
     events:	
       - schedule:
           rate:
-            - cron(0 8 ? * TUE,THU,SAT *)
+            - cron(0 9 ? * * *)
       - httpApi:
           path: /update-prices
           method: get
