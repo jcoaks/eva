@@ -9,6 +9,7 @@ provider:
     TURSO_DATABASE_URL: "${env:TURSO_DATABASE_URL}"
     TURSO_AUTH_TOKEN: ${env:TURSO_AUTH_TOKEN}
     UNSPLASH_ACCESS_KEY: ${env:UNSPLASH_ACCESS_KEY}
+    OPENAI_API_KEY: ${env:OPENAI_API_KEY}
 
 functions:
   updatePrices:

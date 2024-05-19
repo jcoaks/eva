@@ -60,7 +60,9 @@ async function updateProduct(product) {
   }
 
   try {
-    if(database_product.image_url != ""){
+    if(database_product.image_url == null && database_product.name == "PEPINO"){
+      console.log(database_product);
+      console.log(database_product.image_url);
       var image_url = await getProductImage(database_product.name);
       console.log(image_url);
       if(image_url != null && image_url != ""){
@@ -99,6 +101,39 @@ async function updateProduct(product) {
 }
 
 async function getProductImage(query){
+  const apiKey = process.env.OPENAI_API_KEY;
+  try {
+    var url = `https://api.openai.com/v1/images/generations`;
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`
+      },
+      body: JSON.stringify({
+        prompt: "Foto cuadrada realistica y pequeña de un producto de un invetario para una venta de frutas y verduras, el producto es " + query,
+        n: 1,
+        size: "50x50",
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log(data);
+        console.log(data.data.data[0].url);
+        return data.data.data[0].url
+    })
+    .catch(error => {
+      console.error('Error al obtener imágenes:', error);
+      return null;
+    });;
+
+  } catch (error) {
+    console.error("Error generating image:", error);
+  }
+}
+
+async function getProductImage2(query){
   const accessKey = process.env.UNSPLASH_ACCESS_KEY;
   console.log(accessKey);
   var url = `https://api.unsplash.com/search/photos?query=${query}%20fruta&orientation=squarish&client_id=${accessKey}&page=1&per_page=1&lang=es`;
