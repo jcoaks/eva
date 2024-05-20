@@ -59,22 +59,22 @@ async function updateProduct(product) {
     console.log(`${database_product.id} ${code} new product added!`);
   }
 
-  try {
-    if(database_product.image_url == null){
-      var image_url = await getProductImage(database_product.name);
-      console.log(image_url);
-      if(image_url != null){
-        const result1 = await turso.execute({
-          sql: "UPDATE products SET image_url=? WHERE code=?;",
-          args: [image_url, code],
-        });
-        console.log(`${database_product.id} ${code} image updated!`);
-      }
-    }
-  }
-  catch (exceptionVar) {
-    console.error(exceptionVar);
-  }
+  // try {
+  //   if(database_product.image_url == null){
+  //     var image_url = await getProductImage(database_product.name);
+  //     console.log(image_url);
+  //     if(image_url != null){
+  //       const result1 = await turso.execute({
+  //         sql: "UPDATE products SET image_url=? WHERE code=?;",
+  //         args: [image_url, code],
+  //       });
+  //       console.log(`${database_product.id} ${code} image updated!`);
+  //     }
+  //   }
+  // }
+  // catch (exceptionVar) {
+  //   console.error(exceptionVar);
+  // }
   
   try {
     const result = await turso.execute({
