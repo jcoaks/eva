@@ -60,12 +60,10 @@ async function updateProduct(product) {
   }
 
   try {
-    if(database_product.image_url == null && database_product.name == "PEPINO"){
-      console.log(database_product);
-      console.log(database_product.image_url);
+    if(database_product.image_url == null){
       var image_url = await getProductImage(database_product.name);
       console.log(image_url);
-      if(image_url != null && image_url != ""){
+      if(image_url != null){
         const result1 = await turso.execute({
           sql: "UPDATE products SET image_url=? WHERE code=?;",
           args: [image_url, code],
@@ -104,32 +102,31 @@ async function getProductImage(query){
   const apiKey = process.env.OPENAI_API_KEY;
   try {
     var url = `https://api.openai.com/v1/images/generations`;
-
-    const response = await fetch(url, {
+    return await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${apiKey}`
       },
       body: JSON.stringify({
-        prompt: "Foto cuadrada realistica y pequeña de un producto de un invetario para una venta de frutas y verduras, el producto es " + query,
+        prompt: `Foto realista de un producto de un invetario para un negocio de frutas y verduras, el producto es ${query}`,
         n: 1,
-        size: "50x50",
+        size: '256x256',
       })
     })
     .then(response => response.json())
     .then(data => {
         console.log(data);
-        console.log(data.data.data[0].url);
-        return data.data.data[0].url
+        console.log(data.data[0].url);
+        return data.data[0].url
     })
     .catch(error => {
       console.error('Error al obtener imágenes:', error);
       return null;
-    });;
-
+    });
   } catch (error) {
     console.error("Error generating image:", error);
+    return null;
   }
 }
 
